@@ -32,7 +32,11 @@ on:
 
 env:
   AWS_REGION: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: mich/react-1  # set this to your Amazon ECR repository name
+
+  # ECR_REPOSITORY: mich/react-1  # set this to your Amazon ECR repository name
+  ECR_PUBLIC_ALIAS: mich          # Your ECR Public registry alias
+  ECR_PUBLIC_REPOSITORY: react-1  # Your ECR Public repo name
+
   ECS_SERVICE: docker-react-family-service-9pnnz6lr           # set this to your Amazon ECS service name
   ECS_CLUSTER: elastic-koala-xs8u7s                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
@@ -75,9 +79,9 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . -f Dockerfile
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        docker build -t public.ecr.aws/${{ env.ECR_PUBLIC_ALIAS }}/${{ env.ECR_PUBLIC_REPOSITORY }}:${{ IMAGE_TAG }} . -f Dockerfile
+        docker push public.ecr.aws/${{ env.ECR_PUBLIC_ALIAS }}/${{ env.ECR_PUBLIC_REPOSITORY }}:${{ IMAGE_TAG }}
+        echo "image=$ECR_PUBLIC_ALIAS/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
