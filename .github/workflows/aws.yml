@@ -32,10 +32,13 @@ on:
 
 env:
   AWS_REGION_LOCAL: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
-  AWS_ECR_PUBLIC_REGION: us-east-1
+  # AWS_ECR_PUBLIC_REGION: us-east-1
 
-  ECR_PUBLIC_ALIAS: s8v1x4d9          # Your ECR Public registry id
-  ECR_PUBLIC_REPOSITORY: mich/react-1  # Your ECR Public repo name
+  DOCKERHUB_USERNAME: rightattitudematters
+  DOCKERHUB_REPOSITORY: docker-react-1
+
+  # ECR_PUBLIC_ALIAS: s8v1x4d9          # Your ECR Public registry id
+  # ECR_PUBLIC_REPOSITORY: mich/react-1  # Your ECR Public repo name
   IMAGE_TAG: latest
 
   ECS_SERVICE: docker-react-family-service-9pnnz6lr           # set this to your Amazon ECS service name
@@ -65,40 +68,39 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_ECR_PUBLIC_REGION }}
 
-    - name: Login to Amazon ECR Public
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        registry-type: public
-        aws-region: ${{ env.AWS_ECR_PUBLIC_REGION }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Build, tag, and push image to DockerHub
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
-        AWS_REGION: ${{ env.AWS_REGION_LOCAL }}
+        DOCKERHUB_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+        DOCKERHUB_REPOSITORY: ${{ env.DOCKERHUB_REPOSITORY }}
       run: |
         # Build a docker container and
-        # push it to ECR so that it can
+        # push it to DockerHub so that it can
         # be deployed to ECS.
-        docker build -t public.ecr.aws/${{ env.ECR_PUBLIC_ALIAS }}/${{ env.ECR_PUBLIC_REPOSITORY }}:${{ env.IMAGE_TAG }} . -f Dockerfile
-        docker push public.ecr.aws/${{ env.ECR_PUBLIC_ALIAS }}/${{ env.ECR_PUBLIC_REPOSITORY }}:${{ env.IMAGE_TAG }}
-        echo "image=public.ecr.aws/$ECR_PUBLIC_ALIAS/$ECR_PUBLIC_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        docker build -t ${{ DOCKERHUB_USERNAME }}/${{ DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_TAG }} . -f Dockerfile
+        docker push ${{ DOCKERHUB_USERNAME }}/${{ DOCKERHUB_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        echo "image=$DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY" >> $GITHUB_OUTPUT
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
-        aws-region: ${{ env.AWS_REGION_LOCAL }}
-        image: ${{ steps.build-image.outputs.image }}
+    # - name: Fill in the new image ID in the Amazon ECS task definition
+    #   id: task-def
+    #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+    #   with:
+    #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
+    #     container-name: ${{ env.CONTAINER_NAME }}
+    #     aws-region: ${{ env.AWS_REGION_LOCAL }}
+    #     image: ${{ steps.build-image.outputs.image }}
 
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+    # - name: Deploy Amazon ECS task definition
+    #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    #   with:
+    #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+    #     service: ${{ env.ECS_SERVICE }}
+    #     cluster: ${{ env.ECS_CLUSTER }}
+    #     wait-for-service-stability: true
