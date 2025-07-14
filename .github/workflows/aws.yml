@@ -31,7 +31,7 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
+  AWS_REGION_LOCAL: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
   AWS_ECR_PUBLIC_REGION: us-east-1
 
   ECR_PUBLIC_ALIAS: s8v1x4d9          # Your ECR Public registry id
@@ -70,6 +70,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v2
       with:
         registry-type: public
+        aws-region: ${{ env.AWS_ECR_PUBLIC_REGION }}
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
@@ -91,6 +92,7 @@ jobs:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
+        aws-region: ${{ env.AWS_REGION_LOCAL }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -98,5 +100,5 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ${{ env.AWS_REGION_LOCAL }}
         wait-for-service-stability: true
