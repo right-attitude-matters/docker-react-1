@@ -31,7 +31,7 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION_LOCAL: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
+  AWS_REGION: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
   # AWS_ECR_PUBLIC_REGION: us-east-1
 
   DOCKERHUB_USERNAME: rightattitudematters
@@ -66,7 +66,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_ECR_PUBLIC_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3
@@ -94,7 +94,7 @@ jobs:
     #   with:
     #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
     #     container-name: ${{ env.CONTAINER_NAME }}
-    #     aws-region: ${{ env.AWS_REGION_LOCAL }}
+    #     aws-region: ${{ env.AWS_REGION }}
     #     image: ${{ steps.build-image.outputs.image }}
 
     # - name: Deploy Amazon ECS task definition
