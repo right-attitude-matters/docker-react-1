@@ -32,6 +32,7 @@ on:
 
 env:
   AWS_REGION: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
+  AWS_ECR_PUBLIC_REGION: us-east-1
 
   ECR_PUBLIC_ALIAS: s8v1x4d9          # Your ECR Public registry id
   ECR_PUBLIC_REPOSITORY: mich/react-1  # Your ECR Public repo name
@@ -62,7 +63,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ${{ env.AWS_ECR_PUBLIC_REGION }}
 
     - name: Login to Amazon ECR Public
       id: login-ecr
