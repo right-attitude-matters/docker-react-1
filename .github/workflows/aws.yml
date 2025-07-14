@@ -97,4 +97,5 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
+        aws-region: ${{ env.AWS_REGION }}
         wait-for-service-stability: true
