@@ -36,6 +36,7 @@ env:
   # ECR_REPOSITORY: mich/react-1  # set this to your Amazon ECR repository name
   ECR_PUBLIC_ALIAS: mich          # Your ECR Public registry alias
   ECR_PUBLIC_REPOSITORY: react-1  # Your ECR Public repo name
+  IMAGE_TAG: latest
 
   ECS_SERVICE: docker-react-family-service-9pnnz6lr           # set this to your Amazon ECS service name
   ECS_CLUSTER: elastic-koala-xs8u7s                 # set this to your Amazon ECS cluster name
