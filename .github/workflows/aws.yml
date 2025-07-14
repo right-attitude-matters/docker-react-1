@@ -33,9 +33,8 @@ on:
 env:
   AWS_REGION: ap-southeast-2                  # set this to your preferred AWS region, e.g. us-west-1
 
-  # ECR_REPOSITORY: mich/react-1  # set this to your Amazon ECR repository name
-  ECR_PUBLIC_ALIAS: mich          # Your ECR Public registry alias
-  ECR_PUBLIC_REPOSITORY: react-1  # Your ECR Public repo name
+  ECR_PUBLIC_ALIAS: s8v1x4d9          # Your ECR Public registry id
+  ECR_PUBLIC_REPOSITORY: mich/react-1  # Your ECR Public repo name
   IMAGE_TAG: latest
 
   ECS_SERVICE: docker-react-family-service-9pnnz6lr           # set this to your Amazon ECS service name
